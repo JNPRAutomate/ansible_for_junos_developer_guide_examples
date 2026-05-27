@@ -1,22 +1,21 @@
 # Ansible for Junos OS Developer Guide Examples
 
 A complete collection of Ansible playbooks sourced directly from the
-**Juniper Networks Ansible for Junos OS Developer Guide**, covering all modules
-in the [`juniper.device`](https://galaxy.ansible.com/ui/repo/published/juniper/device/)
-collection.
+**Juniper Networks Ansible for Junos OS Developer Guide**, covering all modules in the [`juniper.device`](https://galaxy.ansible.com/ui/repo/published/juniper/device/)
+collection. Published on 2025-09-02.
 
-Every playbook includes the source page name, page number, and URL in its
-header comments. The developer guide PDF is included in this folder for
-reference.
+Every playbook includes the source page name, page number, and URL in its header comments. The developer guide PDF is included in this folder for reference.
 
+There are minor changes made to the playbooks which include:
+- indentation adjustments
+- addition of FQCNs that are documented in the 3 playbooks altered
+ 
 ---
 
 ## Source Documentation
 
-| Document | URL |
-|---|---|
-| Ansible for Junos OS Developer Guide (PDF) | https://www.juniper.net/documentation/us/en/software/junos-ansible/ansible/ansible.pdf |
-| Developer Guide (HTML) | https://www.juniper.net/documentation/us/en/software/junos-ansible/ansible/topics/concept/junos-ansible-overview.html |
+[Ansible for Junos OS Developer Guide (PDF)](ansible.pdf)  
+[Developer Guide (HTML)](https://www.juniper.net/documentation/us/en/software/junos-ansible/ansible/topics/concept/junos-ansible-overview.html)
 
 ---
 

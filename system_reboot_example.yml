@@ -14,6 +14,11 @@
 #     4. Pauses 180 seconds for the reboot to complete (handler)
 #     5. Waits up to wait_time_after_reboot seconds for NETCONF to return
 #
+# REVIEW - DEPRECATION FIXES APPLIED:
+#   Issue #7  (spreadsheet): fail: replaced with ansible.builtin.fail
+#   Issue #2  (spreadsheet): pause: replaced with ansible.builtin.pause
+#   Issue #8  (spreadsheet): fail: msg="..." inline syntax replaced with
+#
 # Usage:
 #   ansible-playbook system_reboot_example.yml -i <inventory>
 # =============================================================================
@@ -37,7 +42,8 @@
 
   tasks:
     - name: Confirmation check
-      fail: msg="Playbook run confirmation failed"
+      ansible.builtin.fail:
+        msg: "Playbook run confirmation failed"
       when: reboot_confirmation != "yes"
 
 
@@ -66,7 +72,7 @@
 
   handlers:
     - name: pause_for_reboot
-      pause:
+      ansible.builtin.pause:
         seconds: 180
       when: result.reboot
     - name: wait_reboot

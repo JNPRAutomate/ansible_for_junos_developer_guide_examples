@@ -29,6 +29,13 @@
 #   Variables expected in inventory or vars:
 #     - build_dir, junos_conf, logfile
 #
+# REVIEW - DEPRECATION FIXES APPLIED:
+#   Issue #3  (spreadsheet): pause: replaced with ansible.builtin.pause
+#   Issue #4  (spreadsheet): file: replaced with ansible.builtin.file
+#   Issue #5  (spreadsheet): template: replaced with ansible.builtin.template
+#   Issue #6  (spreadsheet): assemble: replaced with ansible.builtin.assemble
+#   Issue #10 (spreadsheet): pause: seconds=60 inline syntax replaced with
+#
 # Usage:
 #   ansible-playbook jsnapy_bgp_example.yml -i <inventory>
 # =============================================================================
@@ -41,24 +48,24 @@
 
   tasks:
     - name: Remove build directory
-      file:
+      ansible.builtin.file:
         path: "{{ build_dir }}"
         state: absent
 
 
     - name: Create build directory
-      file:
+      ansible.builtin.file:
         path: "{{ build_dir }}"
         state: directory
 
     - name: Build BGP configuration
-      template:
+      ansible.builtin.template:
         src: "{{ playbook_dir }}/bgp-template.j2"
         dest: "{{ build_dir }}/bgp.conf"
 
 
     - name: Assemble configuration parts
-      assemble:
+      ansible.builtin.assemble:
         src: "{{ build_dir }}"
         dest: "{{ junos_conf }}"
 
@@ -81,7 +88,8 @@
 
   handlers:
     - name: Waiting for BGP peers to establish connections
-      pause: seconds=60
+      ansible.builtin.pause:
+        seconds: 60
 
 
 
