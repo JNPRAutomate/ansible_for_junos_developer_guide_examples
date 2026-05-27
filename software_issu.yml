@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Install Software on Junos Devices
+#          > How to Perform a Unified ISSU or NSSU
+# Page   : 96
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Performs a unified in-service software upgrade (ISSU) using issu: true.
+#   Upgrades between two Junos OS releases with no control plane disruption.
+#
+# Usage:
+#   ansible-playbook software_issu.yml -i <inventory>
+# =============================================================================
+---
+- name: Perform a Junos OS software upgrade
+  hosts: mx1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Perform a unified ISSU
+      juniper.device.software:
+         local_package: "junos-install-mx-x86-64-17.2R1.13.tgz"
+         issu: true
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

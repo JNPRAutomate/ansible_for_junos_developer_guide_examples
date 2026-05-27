@@ -1,0 +1,27 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Halt, Reboot, or Shut Down Junos Devices
+#          > How to Specify the Target Routing Engine
+# Page   : 78-79
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-system.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Explicitly reboots all Routing Engines using all_re: true (the default).
+#   WARNING: This playbook is disruptive. Verify your inventory before running.
+#
+# Usage:
+#   ansible-playbook system_reboot_all_re.yml -i <inventory>
+# =============================================================================
+---
+- name: Reboot Junos devices
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Reboot all Routing Engines
+      juniper.device.system:
+        action: "reboot"
+        all_re: true

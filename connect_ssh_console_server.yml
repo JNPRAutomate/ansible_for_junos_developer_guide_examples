@@ -1,0 +1,56 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Connect to Junos Devices Using Ansible
+#          > Connect to a Device Using SSH
+# Page   : 33-34
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-connection-methods.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Connects to a Junos device through an SSH connection to a console server.
+#   Prompts for separate credentials for the console server (cs_user /
+#   cs_passwd) and the Junos device (user / passwd). If SSH keys are in use,
+#   cs_passwd is the passphrase for the private key.
+#
+#   The inventory group dc1_con should contain the console server hostnames
+#   or IP addresses, not the Junos device addresses.
+#
+# Usage:
+#   ansible-playbook connect_ssh_console_server.yml -i <inventory>
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1_con
+  connection: local
+  gather_facts: no
+
+
+  vars_prompt:
+    - name: "CS_USER"
+      prompt: "Console server username"
+      private: no
+    - name: "CS_PASSWORD"
+      prompt: "Console server password"
+      private: yes
+    - name: "JUNOS_USER"
+      prompt: "Junos OS username"
+      private: no
+    - name: "JUNOS_PASSWORD"
+      prompt: "Junos OS password"
+      private: yes
+
+
+  vars:
+    cs_user: "{{ CS_USER }}"
+    cs_passwd: "{{ CS_PASSWORD }}"
+    user: "{{ JUNOS_USER }}"
+    passwd: "{{ JUNOS_PASSWORD }}"
+
+
+  tasks:
+    - name: "Retrieve facts from Junos devices"
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"
+    - name: Print version
+      ansible.builtin.debug:
+         var: junos.version

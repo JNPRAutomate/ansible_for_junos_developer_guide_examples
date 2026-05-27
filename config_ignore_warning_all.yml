@@ -1,0 +1,34 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Ignore Warnings When Configuring Devices
+# Page   : 180-181
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Suppresses all RpcError exceptions raised for warnings using
+#   ignore_warning: true. Errors with higher severity still raise exceptions.
+#
+# Usage:
+#   ansible-playbook config_ignore_warning_all.yml -i <inventory>
+# =============================================================================
+---
+- name: Configure Device
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Configure op script
+      juniper.device.config:
+         config_mode: "private"
+         load: "set"
+         lines:
+           - "set system scripts op file bgp.slax"
+         ignore_warning: true
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

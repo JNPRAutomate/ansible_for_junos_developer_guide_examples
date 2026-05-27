@@ -1,0 +1,34 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Execute Commands and RPCs on Junos Devices
+#          > How to Execute Commands with the Juniper Networks Modules
+# Page   : 56
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-commands-rpcs-executing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Executes two operational mode commands on each device in the inventory
+#   group and displays the module response in standard output.
+#
+# Usage:
+#   ansible-playbook command_basic.yml -i <inventory>
+# =============================================================================
+---
+- name: Get device information
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Get software and uptime information
+      juniper.device.command:
+         commands:
+           - "show version"
+           - "show system uptime"
+      register: junos_result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: junos_result

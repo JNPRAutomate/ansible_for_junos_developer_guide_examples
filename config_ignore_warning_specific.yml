@@ -1,0 +1,33 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Ignore Warnings When Configuring Devices
+# Page   : 181
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Suppresses RpcError exceptions for two specific named warnings.
+#
+# Usage:
+#   ansible-playbook config_ignore_warning_specific.yml -i <inventory>
+# =============================================================================
+---
+- name: Configure Device
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: Configure Junos device and ignore warnings
+      juniper.device.config:
+         config_mode: "private"
+         load: "merge"
+         src: "build_conf/{{ inventory_hostname }}/junos.conf"
+         ignore_warning:
+            - "Advertisement-interval is less than four times"
+            - "Chassis configuration for network services has been changed."
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

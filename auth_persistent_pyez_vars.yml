@@ -1,0 +1,47 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Authenticate Users Executing Ansible Modules on Junos Devices
+#          > How to Define Authentication Parameters in the vars: Section
+#            for Local and Persistent Connections
+# Page   : 41-42
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-authenticating-users.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Demonstrates defining authentication parameters in the play's vars:
+#   section for a persistent juniper.device.pyez connection. The user and
+#   passwd values reference variables defined in the vault-vars.yaml file.
+#
+#   For persistent connections, parameters MUST be defined in vars: —
+#   they cannot be passed as module arguments. The host parameter defaults
+#   to {{ inventory_hostname }} and is not required here.
+#
+# Usage:
+#   ansible-playbook auth_persistent_pyez_vars.yml -i <inventory> --ask-vault-pass
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1
+  connection: juniper.device.pyez
+  gather_facts: no
+
+
+  vars:
+    user: "{{ admin_username }}"
+    passwd: "{{ admin_password }}"
+
+
+  vars_files:
+    - vault-vars.yaml
+
+
+  tasks:
+    - name: Retrieve facts from Junos devices
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"
+
+
+    - name: Get hardware inventory
+      juniper.device.command:
+        commands: "show chassis hardware"
+        dest_dir: "{{ playbook_dir }}"

@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Specify the Source Database for the Configuration Data
+#          > Candidate Configuration Database
+# Page   : 150
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the complete candidate configuration in text format.
+#   Returns an error if the database is locked or modified.
+#
+# Usage:
+#   ansible-playbook retrieve_candidate.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration"
+  hosts: junos-all
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Get candidate configuration"
+      juniper.device.config:
+         retrieve: "candidate"
+      register: response
+    - name: "Print result"
+      ansible.builtin.debug:
+         var: response

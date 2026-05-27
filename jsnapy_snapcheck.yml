@@ -1,0 +1,38 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Perform JSNAPy Snapshot Tests on Junos Devices
+#          > Perform Snapcheck Operations
+# Page   : 124
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-jsnapy.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Takes a snapshot and immediately evaluates it against pre-defined
+#   criteria (snapcheck action). No separate PRE/POST workflow needed.
+#
+# Usage:
+#   ansible-playbook jsnapy_snapcheck.yml -i <inventory>
+# =============================================================================
+---
+- name: Junos Snapshot Administrator tests
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Take a snapshot and immediately evaluate it
+      juniper.device.jsnapy:
+        action: "snapcheck"
+        dir: "~/jsnapy/testfiles/"
+        test_files:
+          - "test_interface_status.yaml"
+          - "test_bgp_neighbor.yaml"
+        logfile: "jsnapy_tests.log"
+      register: test_result
+
+
+    - name: Verify JSNAPy tests passed
+      ansible.builtin.assert:
+        that:
+          - "test_result.passPercentage == 100"

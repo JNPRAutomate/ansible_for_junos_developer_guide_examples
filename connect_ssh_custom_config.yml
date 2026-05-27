@@ -1,0 +1,37 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Connect to Junos Devices Using Ansible
+#          > Connect to a Device Using SSH
+# Page   : 35
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-connection-methods.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Uses a non-default SSH client configuration file specified via the
+#   ssh_config variable. The modules automatically query ~/.ssh/config by
+#   default; use ssh_config to override this with a different file.
+#
+#   Any SSH settings relevant to the connection (IdentityFile, User,
+#   StrictHostKeyChecking, etc.) can be defined in the custom config file.
+#
+# Usage:
+#   ansible-playbook connect_ssh_custom_config.yml -i <inventory>
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  vars:
+    ssh_config: "/home/admin/.ssh/config_dc"
+
+
+  tasks:
+    - name: "Retrieve facts from Junos devices"
+      juniper.device.facts:
+        savedir: "{{ playbook_dir }}"
+    - name: Print version
+      ansible.builtin.debug:
+        var: junos.version

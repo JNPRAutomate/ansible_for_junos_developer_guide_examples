@@ -1,0 +1,51 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Connect to Junos Devices Using Ansible
+#          > Connect to a Device Using a Serial Console Connection
+# Page   : 36-37
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-connection-methods.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Connects to a Junos device through the CONSOLE port using a serial
+#   console connection. Useful for initially configuring new or zeroized
+#   devices that are not yet reachable over the network.
+#
+#   The terminal or laptop must be physically connected to the device via
+#   the CONSOLE port. When mode is set to "serial" and port is omitted,
+#   port defaults to /dev/ttyUSB0.
+#
+#   Loads and commits an initial configuration from the local file
+#   configs/junos.conf (relative to the playbook directory).
+#
+# Usage:
+#   ansible-playbook connect_serial_console.yml -i <inventory>
+# =============================================================================
+---
+- name: Load Initial Configuration
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  vars_prompt:
+    - name: "DEVICE_USERNAME"
+      prompt: "Device username"
+      private: no
+    - name: "DEVICE_PASSWORD"
+      prompt: "Device password"
+      private: yes
+
+
+  tasks:
+    - name: Load initial configuration and commit
+      juniper.device.config:
+         user: "{{ DEVICE_USERNAME }}"
+         passwd: "{{ DEVICE_PASSWORD }}"
+         mode: "serial"
+         load: "merge"
+         src: "configs/junos.conf"
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+         var: response

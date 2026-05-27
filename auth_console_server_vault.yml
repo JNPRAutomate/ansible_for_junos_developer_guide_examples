@@ -1,0 +1,48 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Authenticate Users Executing Ansible Modules on Junos Devices
+#          > How to Authenticate Through a Console Server
+# Page   : 49-50
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-authenticating-users.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Connects to a Junos device through a console server using vault-stored
+#   credentials. Separate parameters are required for the console server
+#   (cs_user, cs_passwd) and the Junos device (user, passwd).
+#
+#   In this example, cs_passwd is the passphrase for the SSH private key
+#   specified in ssh_private_key_file — not a device password.
+#
+#   The vault file (vault-vars.yaml) must define:
+#     junos_username, junos_password, cs_username, cs_key_password
+#
+#   The inventory group dc1_con should contain console server addresses.
+#
+# Usage:
+#   ansible-playbook auth_console_server_vault.yml -i <inventory> --ask-vault-pass
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1_con
+  connection: local
+  gather_facts: no
+
+
+  vars_files:
+    - vault-vars.yaml
+
+
+  vars:
+    host: "{{ inventory_hostname }}"
+    user: "{{ junos_username }}"
+    passwd: "{{ junos_password }}"
+    cs_user: "{{ cs_username }}"
+    cs_passwd: "{{ cs_key_password }}"
+    ssh_private_key_file: "/home/user/.ssh/id_rsa_dc"
+
+
+  tasks:
+    - name: Retrieve facts from Junos devices
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"

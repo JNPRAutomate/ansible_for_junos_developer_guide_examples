@@ -1,0 +1,35 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Load Configuration Data Using a Jinja2 Template
+# Page   : 173
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Renders a Jinja2 template (interfaces-mpls.j2) with the supplied vars
+#   dictionary, then loads and commits the resulting configuration.
+#
+# Usage:
+#   ansible-playbook config_load_jinja2.yml -i <inventory>
+# =============================================================================
+---
+- name: "Load and commit configuration"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: "Load a configuration from a Jinja2 template and commit"
+      juniper.device.config:
+         load: "merge"
+         template: "build_conf/templates/interfaces-mpls.j2"
+         format: "text"
+         vars:
+            interfaces: ["ge-1/0/1", "ge-1/0/2", "ge-1/0/3"]
+            description: "MPLS interface"
+            family: "mpls"
+      register: response
+    - name: "Print the response"
+      ansible.builtin.debug:
+        var: response

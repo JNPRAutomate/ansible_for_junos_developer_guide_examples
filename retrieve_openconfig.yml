@@ -1,0 +1,35 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Retrieve Configuration Data for Third-Party YANG Data Models
+# Page   : 154-155
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the OpenConfig interfaces configuration hierarchy. Requires the
+#   OpenConfig YANG modules to be loaded on the device.
+#
+# Usage:
+#   ansible-playbook retrieve_openconfig.yml -i <inventory>
+# =============================================================================
+---
+- name: "Retrieve OpenConfig configuration"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Retrieve the OpenConfig interfaces configuration"
+      juniper.device.config:
+         retrieve: "committed"
+         model: "openconfig"
+         filter: "interfaces"
+         format: "xml"
+      register: response
+
+
+    - name: "Print result"
+      ansible.builtin.debug:
+        var: response

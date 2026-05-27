@@ -1,0 +1,56 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Example: Use Ansible to Configure Junos Devices
+#          > Results (final assembled playbook)
+# Page   : 185
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Full end-to-end example playbook that configures a Junos op script:
+#     1. Checks NETCONF connectivity on port 830
+#     2. Copies the op script (bgp.slax) to the device using file_copy
+#     3. Merges configuration data from a local file and commits with a comment
+#     4. Prints the module response (includes diff of changes)
+#
+#   Supporting files required:
+#     - scripts/bgp.slax
+#     - build_conf/<hostname>/junos-config.conf
+#
+# Usage:
+#   ansible-playbook config_example.yml -i <inventory>
+# =============================================================================
+---
+- name: Load and commit configuration data on a Junos device
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Check NETCONF connectivity
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 830
+        timeout: 5
+
+
+    - name: Copy the op script to the device
+      juniper.device.file_copy:
+        action: put
+        file: bgp.slax
+        local_dir: scripts
+        remote_dir: /var/db/scripts/op
+
+
+    - name: Merge configuration data from a file and commit
+      juniper.device.config:
+        load: "merge"
+        src: "build_conf/{{ inventory_hostname }}/junos-config.conf"
+        comment: "Configuring op script with Ansible"
+      register: response
+
+
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

@@ -1,0 +1,32 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Execute Commands and RPCs on Junos Devices
+#          > How to Execute RPCs with the Juniper Networks Modules
+# Page   : 57
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-commands-rpcs-executing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Executes the get-interface-information RPC on each device in the inventory
+#   group and displays the module response in standard output.
+#
+# Usage:
+#   ansible-playbook rpc_basic.yml -i <inventory>
+# =============================================================================
+---
+- name: Execute RPC
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Get interface information
+      juniper.device.rpc:
+         rpcs: "get-interface-information"
+      register: junos_result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: junos_result

@@ -1,0 +1,35 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible with Junos PyEZ Tables to Retrieve Operational
+#          Information from Junos Devices
+#          > How to Use the Juniper Networks Ansible Modules with Junos
+#            PyEZ Tables
+# Page   : 72
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-pyez-tables.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Uses the predefined PyEZ ArpTable (arp.yml) to retrieve ARP information.
+#   The path and table arguments are not required here because ArpTable is
+#   in the default op Tables directory and is the only Table in the file.
+#
+# Usage:
+#   ansible-playbook table_arp.yml -i <inventory>
+# =============================================================================
+---
+- name: Get ARP information
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Get ARP information using Junos PyEZ Table
+      juniper.device.table:
+         file: "arp.yml"
+      register: result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: result

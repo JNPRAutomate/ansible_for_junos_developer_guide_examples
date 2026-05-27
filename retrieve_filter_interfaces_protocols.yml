@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Specify the Scope of the Configuration Data to Return
+# Page   : 150-151
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the [edit interfaces] and [edit protocols] hierarchy levels
+#   from the committed configuration database.
+#
+# Usage:
+#   ansible-playbook retrieve_filter_interfaces_protocols.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration hierarchies"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Get selected configuration hierarchies"
+      juniper.device.config:
+        retrieve: "committed"
+        filter: "<configuration><interfaces/><protocols/></configuration>"
+      register: response
+    - name: "Print result"
+      ansible.builtin.debug:
+        var: response

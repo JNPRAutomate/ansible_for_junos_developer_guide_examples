@@ -1,0 +1,66 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Example: Use Ansible to Install Software
+#          > Results (final assembled playbook)
+# Page   : 101-102
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Full end-to-end example playbook for installing Junos OS software:
+#     1. Checks NETCONF connectivity on port 830
+#     2. Installs the software package with validation enabled
+#     3. Reboots the device after install (reboot: true)
+#     4. Logs installation progress to log_dir/software.log
+#     5. Notifies the wait_reboot handler to verify the device comes back
+#     6. Prints the module response
+#
+# Usage:
+#   ansible-playbook software_install_example.yml -i <inventory>
+# =============================================================================
+---
+- name: Install Junos OS
+  hosts: mx1
+  connection: local
+  gather_facts: no
+
+  vars:
+    OS_version: "23.4R1.9"
+    OS_package: "junos-install-mx-x86-64-23.4R1.9.tgz"
+    pkg_dir: "software"
+    log_dir: "{{ playbook_dir }}"
+    netconf_port: 830
+    wait_time: 3600
+
+  tasks:
+    - name: Check NETCONF connectivity
+      ansible.builtin.wait_for:
+         host: "{{ inventory_hostname }}"
+         port: "{{ netconf_port }}"
+         timeout: 5
+
+
+    - name: Install Junos OS package
+      juniper.device.software:
+        version: "{{ OS_version }}"
+        local_package: "{{ pkg_dir }}/{{ OS_package }}"
+        reboot: true
+        validate: true
+        logfile: "{{ log_dir }}/software.log"
+      register: response
+      notify:
+      - wait_reboot
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: response
+
+
+  handlers:
+    - name: wait_reboot
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: "{{ netconf_port }}"
+        timeout: "{{ wait_time }}"
+      when: not response.check_mode

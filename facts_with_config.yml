@@ -1,0 +1,40 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve Facts from Junos Devices
+# Page   : 53-54
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/task/junos-ansible-device-facts-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves device facts AND the active configuration by including the
+#   config_format option. Saves facts and hardware inventory to files in the
+#   playbook directory, and prints the configuration to standard output.
+#
+#   Acceptable config_format values: 'json', 'set', 'text', 'xml'
+#   The configuration is returned in ansible_facts.junos.config.
+#
+#   NOTE: Even when savedir is specified, the configuration data is NOT
+#   written to a file. To save the configuration to a file, use the
+#   juniper.device.config module instead.
+#
+# Usage:
+#   ansible-playbook facts_with_config.yml -i <inventory>
+# =============================================================================
+---
+- name: Get device facts and configuration
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Retrieve device facts and configuration and save facts to file
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"
+         config_format: "xml"
+      register: result
+
+
+    - name: Print configuration
+      ansible.builtin.debug:
+        var: result.ansible_facts.junos.config

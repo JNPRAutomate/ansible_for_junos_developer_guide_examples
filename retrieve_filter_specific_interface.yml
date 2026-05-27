@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Specify the Scope of the Configuration Data to Return
+# Page   : 151-152
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the configuration for the ge-1/0/1 interface only.
+#
+# Usage:
+#   ansible-playbook retrieve_filter_specific_interface.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration hierarchies"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Get selected configuration hierarchies"
+      juniper.device.config:
+         retrieve: "committed"
+         filter: "<interfaces><interface>
+                  <name>ge-1/0/1</name></interface></interfaces>"
+      register: response
+    - name: "Print result"
+      ansible.builtin.debug:
+         var: response

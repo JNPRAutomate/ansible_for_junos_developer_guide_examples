@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve Facts from Junos Devices
+# Page   : 53
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/task/junos-ansible-device-facts-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves device facts for each host in the inventory group and saves
+#   them to separate files in the playbook directory. Two files are created
+#   per device:
+#     <hostname>-facts.json      — device facts in JSON format
+#     <hostname>-inventory.xml   — hardware inventory in XML format
+#
+#   Uses SSH keys in the default location for authentication. Does not
+#   retrieve the active configuration (see facts_with_config.yml for that).
+#
+# Usage:
+#   ansible-playbook facts_basic.yml -i <inventory>
+# =============================================================================
+---
+- name: Get device facts
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Retrieve device facts and save to file
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"

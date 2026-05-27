@@ -1,0 +1,33 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Install Software on Junos Devices
+#          > How to Specify Installation Options That Do Not Have an
+#            Equivalent Module Argument
+# Page   : 94-95
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Installs software using the kwargs argument to pass additional RPC options.
+#   unlink: true removes the package from /var/tmp after a successful upgrade.
+#
+# Usage:
+#   ansible-playbook software_kwargs.yml -i <inventory>
+# =============================================================================
+---
+- name: Perform a Junos OS software upgrade
+  hosts: router1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Upgrade Junos OS
+      juniper.device.software:
+        local_package: "software/jinstall-ppc-17.3R1.10-signed.tgz"
+        kwargs:
+          unlink: true
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

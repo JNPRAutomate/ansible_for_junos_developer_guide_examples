@@ -1,0 +1,42 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Transfer Files to or from Junos Devices
+#          > Transfer Files from the Remote Device
+# Page   : 66-67
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-commands-rpcs-executing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Transfers the messages log file from each device to a host-specific
+#   directory on the Ansible control node.
+#
+#   NOTE: The module may report a failed transfer (checksum mismatch) for
+#   frequently updated log files such as messages. The file is still copied
+#   successfully — verify by checking the logs directory.
+#
+# Usage:
+#   ansible-playbook file_copy_get.yml -i <inventory>
+# =============================================================================
+---
+- name: Archive the messages log file
+  hosts: junos
+  connection: local
+  gather_facts: false
+
+
+  vars:
+    host_log_dir: "logs/{{ inventory_hostname }}"
+
+
+  tasks:
+    - name: Create the log directory for the host
+      ansible.builtin.file:
+         path: "{{ host_log_dir }}"
+         state: directory
+
+    - name: Copy the log file from remote device
+      juniper.device.file_copy:
+        action: get
+        file: messages
+        local_dir: "{{ host_log_dir }}"
+        remote_dir: /var/log

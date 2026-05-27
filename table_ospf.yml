@@ -1,0 +1,35 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible with Junos PyEZ Tables to Retrieve Operational
+#          Information from Junos Devices
+#          > How to Use the Juniper Networks Ansible Modules with Junos
+#            PyEZ Tables
+# Page   : 73
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-pyez-tables.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Uses the predefined PyEZ OspfInterfaceTable (ospf.yml) to retrieve OSPF
+#   interface information. The table argument is required because ospf.yml
+#   defines multiple Tables and Views.
+#
+# Usage:
+#   ansible-playbook table_ospf.yml -i <inventory>
+# =============================================================================
+---
+- name: Get OSPF information
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: Get OSPF interface information
+      juniper.device.table:
+         file: "ospf.yml"
+         table: "OspfInterfaceTable"
+      register: result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: result

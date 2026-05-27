@@ -1,0 +1,32 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Specify the Configuration Mode > Example: config_mode: "private"
+# Page   : 163-164
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Configures an op script using private configuration mode.
+#
+# Usage:
+#   ansible-playbook config_private_mode.yml -i <inventory>
+# =============================================================================
+---
+- name: "Configure Device"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Configure op script"
+      juniper.device.config:
+         config_mode: "private"
+         load: "set"
+         lines:
+           - "set system scripts op file bgp.slax"
+      register: response
+    - name: "Print the config changes"
+      ansible.builtin.debug:
+         var: response.diff_lines

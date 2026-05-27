@@ -1,0 +1,36 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible with Junos PyEZ Tables to Retrieve Operational
+#          Information from Junos Devices
+#          > Specify RPC Arguments
+# Page   : 74
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-pyez-tables.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Uses the predefined PyEZ EthPortTable (ethport.yml) to retrieve interface
+#   information. The kwargs argument overrides the Table's default
+#   interface_name pattern and restricts output to the ge-1/0/0 interface.
+#
+# Usage:
+#   ansible-playbook table_ethport.yml -i <inventory>
+# =============================================================================
+---
+- name: Get interface information
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Get interface information for Ethernet interfaces
+      juniper.device.table:
+        file: "ethport.yml"
+        kwargs:
+          interface_name: "ge-1/0/0"
+      register: result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: result

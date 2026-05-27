@@ -1,0 +1,28 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Perform JSNAPy Snapshot Tests on Junos Devices
+#          > Take Pre-Maintenance Snapshots
+# Page   : 119
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-jsnapy.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Takes a pre-maintenance JSNAPy snapshot using a configuration file
+#   (config_file) that references multiple test files.
+#
+# Usage:
+#   ansible-playbook jsnapy_snap_pre_config_file.yml -i <inventory>
+# =============================================================================
+---
+- name: Junos Snapshot Administrator tests
+  hosts: dc1a
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Take a pre-maintenance snapshot
+      juniper.device.jsnapy:
+         action: "snap_pre"
+         dir: "~/jsnapy/testfiles"
+         config_file: "jsnapy_config_base_tests.yaml"

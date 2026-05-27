@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Load Configuration Data from a Local or Remote File
+#          > Remote File (url)
+# Page   : 170-171
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Loads configuration data from a file that resides on the Junos device,
+#   or from an FTP or HTTP URL reachable from the device, using the url arg.
+#
+# Usage:
+#   ansible-playbook config_load_remote_file.yml -i <inventory>
+# =============================================================================
+---
+- name: "Load and commit configuration"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: "Load configuration from a remote file and commit"
+      juniper.device.config:
+         load: "merge"
+         url: "/var/tmp/junos.conf"
+      register: response
+    - name: "Print the response"
+      ansible.builtin.debug:
+         var: response

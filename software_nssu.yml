@@ -1,0 +1,34 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Install Software on Junos Devices
+#          > How to Perform a Unified ISSU or NSSU
+# Page   : 96-97
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Performs a nonstop software upgrade (NSSU) using nssu: true.
+#
+#   NOTE: The em-dash character in the original PDF filename between "4300"
+#   and "17.3R1.10" has been replaced with a regular hyphen (-).
+#   Verify the exact local package filename before running this playbook.
+#
+# Usage:
+#   ansible-playbook software_nssu.yml -i <inventory>
+# =============================================================================
+---
+- name: Perform a Junos OS software upgrade
+  hosts: ex1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Perform an NSSU
+      juniper.device.software:
+         local_package: "jinstall-ex-4300-17.3R1.10-signed.tgz"
+         nssu: true
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

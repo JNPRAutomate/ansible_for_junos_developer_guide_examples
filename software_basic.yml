@@ -1,0 +1,32 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Install Software on Junos Devices
+#          > Installation Process Overview
+# Page   : 91-92
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Basic Junos OS software upgrade. Copies the package from the control node,
+#   validates configuration against the new package, installs, and reboots.
+#
+# Usage:
+#   ansible-playbook software_basic.yml -i <inventory>
+# =============================================================================
+---
+- name: Perform a Junos OS software upgrade
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Upgrade Junos OS
+      juniper.device.software:
+         local_package: "software/jinstall-ppc-17.3R1.10-signed.tgz"
+         no_copy: false
+         validate: true
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

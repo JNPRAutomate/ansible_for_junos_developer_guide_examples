@@ -1,0 +1,52 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Connect to Junos Devices Using Ansible
+#          > Connect to a Device Using Telnet
+# Page   : 35-36
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-connection-methods.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Connects to a Junos device using Telnet on port 7016. Prompts for
+#   credentials at runtime. Sets mode: "telnet" and port: "7016" in the
+#   vars: section.
+#
+#   When mode is set to "telnet" and port is omitted, port defaults to 23.
+#   Telnet provides unencrypted access — SSH is recommended where possible.
+#
+#   The Telnet service must be configured on the device:
+#     set system services telnet
+#
+# Usage:
+#   ansible-playbook connect_telnet.yml -i <inventory>
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  vars_prompt:
+    - name: "DEVICE_USERNAME"
+      prompt: "Device username"
+      private: no
+    - name: "DEVICE_PASSWORD"
+      prompt: "Device password"
+      private: yes
+
+
+  vars:
+    user: "{{ DEVICE_USERNAME }}"
+    passwd: "{{ DEVICE_PASSWORD }}"
+    mode: "telnet"
+    port: "7016"
+
+
+  tasks:
+    - name: Retrieve facts from Junos devices
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"
+    - name: Print version
+      ansible.builtin.debug:
+         var: junos.version

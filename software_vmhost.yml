@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Install Software on Junos Devices
+#          > How to Perform a VM Host Upgrade
+# Page   : 95
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Upgrades the VM host on devices where Junos OS runs as a virtual machine
+#   over a Linux-based host OS using vmhost: true.
+#
+# Usage:
+#   ansible-playbook software_vmhost.yml -i <inventory>
+# =============================================================================
+---
+- name: Upgrade VM Hosts
+  hosts: vm_hosts
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Perform a VM host upgrade
+      juniper.device.software:
+         local_package: "junos-vmhost-install-qfx-x86-64-18.1R1.9.tgz"
+         vmhost: true
+      register: response
+    - name: Print the response
+      ansible.builtin.debug:
+        var: response

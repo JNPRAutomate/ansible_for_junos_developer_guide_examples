@@ -1,0 +1,36 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Roll Back the Configuration
+# Page   : 175-176
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Prompts for a rollback ID, rolls back to that revision, commits, and
+#   prints the configuration changes (diff format).
+#
+# Usage:
+#   ansible-playbook config_rollback.yml -i <inventory>
+# =============================================================================
+---
+- name: "Roll back the configuration"
+  hosts: dc1a
+  connection: local
+  gather_facts: no
+
+
+  vars_prompt:
+    - name: "ROLLBACK"
+      prompt: "Rollback ID of the configuration to restore"
+      private: no
+
+
+  tasks:
+    - name: "Roll back the configuration and commit"
+      juniper.device.config:
+         rollback: "{{ ROLLBACK }}"
+      register: response
+    - name: "Print the configuration changes"
+      ansible.builtin.debug:
+        var: response.diff_lines

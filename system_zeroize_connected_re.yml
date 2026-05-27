@@ -1,0 +1,27 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Restore the Factory-Default Configuration Settings
+# Page   : 108-109
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-system.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Restores only the connected Routing Engine to factory-default configuration
+#   settings using all_re: False.
+#   WARNING: This operation is irreversible. Verify your inventory carefully.
+#
+# Usage:
+#   ansible-playbook system_zeroize_connected_re.yml -i <inventory>
+# =============================================================================
+---
+- name: Restore Junos devices to factory-default configuration
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Restore connected Routing Engine to factory-default configuration
+      juniper.device.system:
+         action: "zeroize"
+         all_re: False

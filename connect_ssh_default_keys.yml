@@ -1,0 +1,33 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Connect to Junos Devices Using Ansible
+#          > Connect to a Device Using SSH
+# Page   : 33
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-connection-methods.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Establishes a NETCONF session over SSH using SSH keys in the default
+#   location (~/.ssh/). No credentials are explicitly defined in the playbook.
+#   Retrieves device facts and prints the Junos OS version.
+#
+#   The modules first attempt SSH public key-based authentication, then fall
+#   back to password-based authentication.
+#
+# Usage:
+#   ansible-playbook connect_ssh_default_keys.yml -i <inventory>
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Retrieve facts from Junos devices
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"
+    - name: Print version
+      ansible.builtin.debug:
+         var: junos.version

@@ -1,0 +1,30 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Create and Execute Ansible Playbooks to Manage Junos Devices
+# Page   : 11
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/task/junos-ansible-playbooks-creating-executing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   The foundational "getting started" playbook from the developer guide.
+#   Retrieves device facts using juniper.device.facts and prints the Junos OS
+#   version. Uses SSH keys in the default location for authentication — no
+#   credentials are explicitly defined in the playbook.
+#
+# Usage:
+#   ansible-playbook get_device_facts.yml -i <inventory>
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Retrieve facts from a Junos device
+      juniper.device.facts:
+        savedir: "{{ playbook_dir }}"
+    - name: Print version
+      ansible.builtin.debug:
+        var: junos.version

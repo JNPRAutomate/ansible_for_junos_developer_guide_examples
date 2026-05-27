@@ -1,0 +1,34 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Authenticate Users Executing Ansible Modules on Junos Devices
+#          > How to Authenticate the User Using a Playbook or
+#            Command-Line Password Prompt
+# Page   : 46-47
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-authenticating-users.html
+# -----------------------------------------------------------------------------
+# Description:
+#   A minimal playbook intended to be executed with the -k or --ask-pass
+#   command-line option, which prompts for the password without defining
+#   vars_prompt in the playbook itself. Uses the default username.
+#
+#   The supplied password is used as the SSH key passphrase when SSH keys
+#   are in use, or as the device password for password-based authentication.
+#
+# Usage:
+#   ansible-playbook auth_ask_pass.yml -i <inventory> --ask-pass
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: all
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Retrieve facts from Junos devices
+      juniper.device.facts:
+         savedir: "{{ playbook_dir }}"
+    - name: Print facts
+      ansible.builtin.debug:
+        var: junos.version

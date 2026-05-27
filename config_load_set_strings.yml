@@ -1,0 +1,33 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Load Configuration Data as Strings
+# Page   : 168
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Loads configuration data from inline strings using Junos OS set format
+#   and commits the changes.
+#
+# Usage:
+#   ansible-playbook config_load_set_strings.yml -i <inventory>
+# =============================================================================
+---
+- name: "Load and commit configuration"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Load configuration data using strings and commit"
+      juniper.device.config:
+         load: "set"
+         lines:
+           - "set system scripts op file bgp.slax"
+           - "set system scripts op file bgp-neighbor.slax"
+      register: response
+    - name: "Print the response"
+      ansible.builtin.debug:
+        var: response

@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Load the Rescue Configuration
+# Page   : 174-175
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Reverts to the rescue configuration using rollback: "rescue" and commits.
+#   Requires a rescue configuration to have been previously saved on the device:
+#     request system configuration rescue save
+#
+# Usage:
+#   ansible-playbook config_rescue.yml -i <inventory>
+# =============================================================================
+---
+- name: "Revert to rescue configuration"
+  hosts: dc1a
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Load and commit rescue configuration"
+      juniper.device.config:
+        rollback: "rescue"
+      register: response
+    - name: "Print response"
+      ansible.builtin.debug:
+        var: response

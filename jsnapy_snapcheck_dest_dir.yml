@@ -1,0 +1,33 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Perform JSNAPy Snapshot Tests on Junos Devices
+#          > Review Failed JSNAPy Tests
+# Page   : 128
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-jsnapy.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Performs a snapcheck operation and writes failed JSNAPy tests to files
+#   in the dest_dir directory. Available from juniper.device Release 1.0.6+.
+#
+# Usage:
+#   ansible-playbook jsnapy_snapcheck_dest_dir.yml -i <inventory>
+# =============================================================================
+---
+- name: Verify BGP
+  hosts: bgp_routers
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Execute snapcheck
+      juniper.device.jsnapy:
+         action: "snapcheck"
+         dir: "~/jsnapy/testfiles"
+         test_files:
+           - "jsnapy_test_file_bgp_states.yaml"
+           - "jsnapy_test_file_bgp_summary.yaml"
+         logfile: "{{ logfile }}"
+         dest_dir: "{{ playbook_dir }}/jsnapy_failed_tests"
+      register: snapcheck_result

@@ -1,0 +1,29 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Halt, Reboot, or Shut Down Junos Devices
+#          > How to Reboot or Shut Down a VM Host
+# Page   : 79-80
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-system.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Reboots the VM host on devices where Junos OS runs as a virtual machine
+#   over a Linux-based host OS.
+#   WARNING: This playbook is disruptive. Verify your inventory before running.
+#
+# Usage:
+#   ansible-playbook system_reboot_vmhost.yml -i <inventory>
+# =============================================================================
+---
+- name: Reboot VM Hosts
+  hosts: vm_hosts
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Reboot VM host
+      juniper.device.system:
+         action: "reboot"
+         vmhost: true
+         all_re: false

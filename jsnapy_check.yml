@@ -1,0 +1,36 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Perform JSNAPy Snapshot Tests on Junos Devices
+#          > Take and Compare Snapshots
+# Page   : 122-123
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-jsnapy.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Compares PRE and POST snapshots and asserts that all tests passed.
+#   NOTE: The module only reports failed if it CANNOT run the tests.
+#   Use ansible.builtin.assert to check test results explicitly.
+#
+# Usage:
+#   ansible-playbook jsnapy_check.yml -i <inventory>
+# =============================================================================
+---
+- name: Junos Snapshot Administrator tests
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Compare PRE and POST snapshots
+      juniper.device.jsnapy:
+         action: "check"
+         dir: "~/jsnapy/testfiles"
+         config_file: "jsnapy_config_base_tests.yaml"
+         logfile: "jsnapy_tests.log"
+      register: test_result
+
+    - name: Verify JSNAPy tests passed
+      ansible.builtin.assert:
+        that:
+          - "test_result.passPercentage == 100"

@@ -1,0 +1,30 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Specify the Scope of the Configuration Data to Return
+# Page   : 152
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the [edit system services] hierarchy using a path-style filter.
+#
+# Usage:
+#   ansible-playbook retrieve_filter_system_services.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration hierarchies."
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Get selected configuration hierarchies"
+      juniper.device.config:
+         retrieve: "committed"
+         filter: "system/services"
+      register: response
+    - name: "Print result"
+      ansible.builtin.debug:
+        var: response

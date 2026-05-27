@@ -1,0 +1,31 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Specify the Format of the Configuration Data to Return
+# Page   : 153
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the complete committed configuration in XML format.
+#   The config_parsed key in the response contains the equivalent JSON.
+#
+# Usage:
+#   ansible-playbook retrieve_format_xml.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration."
+  hosts: junos-all
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Get configuration in XML format"
+      juniper.device.config:
+         retrieve: "committed"
+         format: "xml"
+      register: response
+    - name: "Print result"
+      ansible.builtin.debug:
+        var: response

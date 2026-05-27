@@ -1,0 +1,43 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Install Software on Junos Devices
+#          > How to Install Software on an EX Series Virtual Chassis Member
+# Page   : 97-98
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-software.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Upgrades the software on specific member switches (member 0 and member 1)
+#   in a non-mixed EX Series Virtual Chassis using the member_id argument.
+#
+# Usage:
+#   ansible-playbook software_ex_vc_members.yml -i <inventory>
+# =============================================================================
+---
+- name: Upgrade specific EX VC members
+  hosts: ex_vc
+  connection: local
+  gather_facts: no
+
+
+  vars:
+    OS_version: "23.2R1.13"
+    OS_package: "junos-install-ex-x86-64-23.2R1.13.tgz"
+    pkg_dir: "software"
+    log_dir: /var/log/
+
+
+  tasks:
+    - name: Check NETCONF connectivity
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 830
+        timeout: 5
+
+
+    - name: Install package on EX VC members
+      juniper.device.software:
+        version: "{{ OS_version }}"
+        local_package: "{{ pkg_dir }}/{{ OS_package }}"
+        member_id: ["0","1"]
+        logfile: "{{ log_dir }}/software.log"

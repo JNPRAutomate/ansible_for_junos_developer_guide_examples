@@ -1,0 +1,30 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Specify the Source Database for the Configuration Data
+#          > Committed Configuration Database
+# Page   : 149-150
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the complete committed configuration in text format (default).
+#
+# Usage:
+#   ansible-playbook retrieve_committed.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration"
+  hosts: junos-all
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Get committed configuration"
+      juniper.device.config:
+         retrieve: "committed"
+      register: response
+    - name: "Print result"
+      ansible.builtin.debug:
+         var: response

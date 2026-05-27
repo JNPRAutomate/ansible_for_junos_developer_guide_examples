@@ -1,0 +1,27 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Save Configuration Data To a File > dest_dir
+# Page   : 156-157
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Retrieves the committed configuration and saves each device's config to
+#   a separate file named <hostname>.config in the configs/ subdirectory.
+#
+# Usage:
+#   ansible-playbook retrieve_dest_dir.yml -i <inventory>
+# =============================================================================
+---
+- name: "Get Junos OS configuration"
+  hosts: junos-all
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Save configuration to a file"
+      juniper.device.config:
+         retrieve: "committed"
+         dest_dir: "{{ playbook_dir }}/configs"

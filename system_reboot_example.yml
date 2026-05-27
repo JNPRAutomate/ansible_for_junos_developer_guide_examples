@@ -1,0 +1,77 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Example: Use Ansible to Reboot Junos Devices
+#          > Results (final assembled playbook)
+# Page   : 84-85
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-system.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Full end-to-end example playbook that reboots Junos devices safely:
+#     1. Prompts the user to confirm intent (fails if not "yes")
+#     2. Verifies NETCONF connectivity on port 830
+#     3. Reboots all Routing Engines after a 2-minute delay
+#     4. Pauses 180 seconds for the reboot to complete (handler)
+#     5. Waits up to wait_time_after_reboot seconds for NETCONF to return
+#
+# Usage:
+#   ansible-playbook system_reboot_example.yml -i <inventory>
+# =============================================================================
+---
+- name: Reboot Junos devices
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  vars:
+    wait_time_after_reboot: 300
+    netconf_port: 830
+
+
+  vars_prompt:
+  - name: "reboot_confirmation"
+    prompt: "This playbook reboots devices. Enter 'yes' to continue"
+    private: no
+
+
+  tasks:
+    - name: Confirmation check
+      fail: msg="Playbook run confirmation failed"
+      when: reboot_confirmation != "yes"
+
+
+    - name: Check NETCONF connectivity
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: "{{ netconf_port }}"
+        timeout: 5
+
+
+    - name: Reboot all Routing Engines on the Junos device
+      juniper.device.system:
+        action: "reboot"
+        in_min: 2
+        all_re: true
+      register: result
+      notify:
+        - pause_for_reboot
+        - wait_reboot
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: result
+
+
+  handlers:
+    - name: pause_for_reboot
+      pause:
+        seconds: 180
+      when: result.reboot
+    - name: wait_reboot
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: "{{ netconf_port }}"
+        timeout: "{{ wait_time_after_reboot }}"
+      when: result.reboot

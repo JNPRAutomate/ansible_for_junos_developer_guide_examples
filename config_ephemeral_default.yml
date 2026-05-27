@@ -1,0 +1,27 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Configure Junos Devices
+#          > How to Specify the Configuration Mode > Configure the Ephemeral Database
+# Page   : 165
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-loading-committing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Configures the default instance of the ephemeral configuration database.
+#
+# Usage:
+#   ansible-playbook config_ephemeral_default.yml -i <inventory>
+# =============================================================================
+---
+- name: "Configure ephemeral database"
+  hosts: dc1a
+  connection: local
+  gather_facts: no
+
+  tasks:
+    - name: "Configure the default ephemeral database"
+      juniper.device.config:
+         config_mode: "ephemeral"
+         load: "set"
+         lines:
+           - "set protocols mpls label-switched-path to-hastings to 192.0.2.1"

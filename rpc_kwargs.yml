@@ -1,0 +1,42 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Execute Commands and RPCs on Junos Devices
+#          > How to Execute RPCs with the Juniper Networks Modules
+# Page   : 58
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-commands-rpcs-executing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Executes three RPCs using the kwargs option to supply per-RPC arguments.
+#   RPCs that need no arguments take an empty dictionary {}.
+#
+#   NOTE: Use underscores in RPC argument names in place of hyphens.
+#
+# Usage:
+#   ansible-playbook rpc_kwargs.yml -i <inventory>
+# =============================================================================
+---
+- name: Get Device Information
+  hosts: dc1a
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Get device information
+      juniper.device.rpc:
+         rpcs:
+           - "get-interface-information"
+           - "get-lldp-interface-neighbors"
+           - "get-software-information"
+         kwargs:
+           - interface_name: "lo0.0"
+             terse: true
+           - interface_device: "ge-0/0/0"
+           - {}
+      register: junos_result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: junos_result

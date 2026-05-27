@@ -1,0 +1,64 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Example: Use Ansible to Restore the Factory-Default
+#          Configuration Settings
+#          > Results (final assembled playbook)
+# Page   : 112-113
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-system.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Full end-to-end example playbook that zeroizes Junos devices via a
+#   console server using Telnet:
+#     1. Prompts for confirmation (fails if not "yes")
+#     2. Prompts for the device password
+#     3. Connects via Telnet on port 23 using the supplied password
+#     4. Restores all REs to factory-default with a 120-second timeout
+#     5. Prints the module response
+#
+# Usage:
+#   ansible-playbook system_zeroize_example.yml -i <inventory>
+# =============================================================================
+---
+- name: Restore Junos devices to factory-default configuration settings
+  hosts: dc1_console
+  connection: local
+  gather_facts: no
+
+
+  vars_prompt:
+    - name: reset_confirmation
+      prompt: >
+        This playbook resets hosts to factory-default configurations!
+        Enter 'yes' to continue.
+      default: "no"
+      private: no
+
+
+    - name: "device_password"
+      prompt: "Device password"
+      private: yes
+
+
+  vars:
+    password: "{{ device_password }}"
+    mode: "telnet"
+    port: 23
+
+
+  tasks:
+    - name: Confirmation check
+      fail: msg="Playbook run confirmation failed"
+      when: reset_confirmation != "yes"
+
+
+    - name: Restore all Routing Engines to factory-default configuration
+      juniper.device.system:
+        action: "zeroize"
+        timeout: 120
+      register: result
+
+
+    - name: Print response
+      ansible.builtin.debug:
+        var: result

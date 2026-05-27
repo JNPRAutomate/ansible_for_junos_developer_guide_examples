@@ -1,0 +1,39 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Retrieve or Compare Junos OS Configurations
+#          > How to Compare the Active Configuration to a Previous Configuration
+# Page   : 158-159
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-configuration-retrieving.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Prompts for a rollback ID, compares the committed configuration to that
+#   rollback snapshot, saves the diff to a file, and prints the response.
+#
+# Usage:
+#   ansible-playbook compare_to_rollback.yml -i <inventory>
+# =============================================================================
+---
+- name: "Compare configurations"
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+  vars_prompt:
+    - name: "ROLLBACK"
+      prompt: "Rollback ID to compare with active configuration"
+      private: no
+
+
+  tasks:
+    - name: "Compare active to previous configuration"
+      juniper.device.config:
+         diff: true
+         rollback: "{{ ROLLBACK }}"
+         check: false
+         commit: false
+         diffs_file: "{{ inventory_hostname }}-diff-rollback-{{ ROLLBACK }}"
+      register: response
+    - name: "Print diff"
+      ansible.builtin.debug:
+         var: response

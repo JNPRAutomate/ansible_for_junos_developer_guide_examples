@@ -1,0 +1,50 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Authenticate Users Executing Ansible Modules on Junos Devices
+#          > How to Authenticate the User Using an Ansible Vault-Encrypted File
+# Page   : 48
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-authenticating-users.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Uses an Ansible vault-encrypted file (vault-vars.yaml) to securely store
+#   and supply credentials. The vault variables root_username and root_password
+#   are referenced in the play's vars: section.
+#
+#   To create the vault file:
+#     ansible-vault create vault-vars.yaml
+#
+#   The vault file should define:
+#     root_username: <username>
+#     root_password: <password>
+#
+#   NOTE: If the actual user and passwd variable names are defined directly
+#   in the vault, the modules pick them up automatically and the explicit
+#   vars: section below is not required.
+#
+# Usage:
+#   ansible-playbook auth_vault.yml -i <inventory> --ask-vault-pass
+# =============================================================================
+---
+- name: Get Device Facts
+  hosts: dc1
+  connection: local
+  gather_facts: no
+
+
+  vars_files:
+    - vault-vars.yaml
+
+
+  vars:
+    user: "{{ root_username }}"
+    passwd: "{{ root_password }}"
+
+
+  tasks:
+    - name: Retrieve facts from Junos devices
+      juniper.device.facts:
+        savedir: "{{ playbook_dir }}"
+    - name: Print version
+      ansible.builtin.debug:
+        var: junos.version

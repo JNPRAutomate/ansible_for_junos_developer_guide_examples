@@ -1,0 +1,122 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Example: Use Ansible to Perform a JSNAPy Snapcheck Operation
+#          > Results (final assembled playbook)
+# Page   : 139-141
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-jsnapy.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Full two-play example that configures BGP and then verifies it with JSNAPy.
+#
+#   Play 1 — Load and commit BGP configuration:
+#     1. Removes and re-creates the build directory
+#     2. Renders BGP config from bgp-template.j2 using host_vars
+#     3. Assembles config parts from the build directory
+#     4. Loads and commits with a 5-minute confirm window
+#     5. Notifies a handler to pause 60 seconds for BGP to establish
+#
+#   Play 2 — Verify BGP:
+#     1. Executes a snapcheck against two JSNAPy test files
+#     2. Confirms the commit only if config changed AND all tests passed
+#     3. Asserts that all JSNAPy tests passed
+#
+#   Supporting files required:
+#     - bgp-template.j2          (Jinja2 template in the playbook directory)
+#     - host_vars/<hostname>/    (per-device variable files)
+#     - jsnapy_test_file_bgp_states.yaml    (in ~/jsnapy/testfiles)
+#     - jsnapy_test_file_bgp_summary.yaml   (in ~/jsnapy/testfiles)
+#   Variables expected in inventory or vars:
+#     - build_dir, junos_conf, logfile
+#
+# Usage:
+#   ansible-playbook jsnapy_bgp_example.yml -i <inventory>
+# =============================================================================
+---
+- name: Load and commit BGP configuration
+  hosts: bgp_routers
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Remove build directory
+      file:
+        path: "{{ build_dir }}"
+        state: absent
+
+
+    - name: Create build directory
+      file:
+        path: "{{ build_dir }}"
+        state: directory
+
+    - name: Build BGP configuration
+      template:
+        src: "{{ playbook_dir }}/bgp-template.j2"
+        dest: "{{ build_dir }}/bgp.conf"
+
+
+    - name: Assemble configuration parts
+      assemble:
+        src: "{{ build_dir }}"
+        dest: "{{ junos_conf }}"
+
+
+    - name: Load and commit config, require confirmation
+      juniper.device.config:
+        load: "merge"
+        format: "text"
+        src: "{{ junos_conf }}"
+        confirm: 5
+        comment: "config by Ansible"
+        logfile: "{{ logfile }}"
+      register: config_result
+
+
+      # Notify handler, only if configuration changes.
+      notify:
+        - Waiting for BGP peers to establish connections
+
+
+  handlers:
+    - name: Waiting for BGP peers to establish connections
+      pause: seconds=60
+
+
+
+- name: Verify BGP
+  hosts: bgp_routers
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: Execute snapcheck
+      juniper.device.jsnapy:
+        action: "snapcheck"
+        dir: "~/jsnapy/testfiles"
+        test_files:
+          - "jsnapy_test_file_bgp_states.yaml"
+          - "jsnapy_test_file_bgp_summary.yaml"
+        logfile: "{{ logfile }}"
+      register: snapcheck_result
+
+
+    # Confirm commit only if configuration changed and JSNAPy tests pass
+    - name: Confirm commit
+      juniper.device.config:
+        check: true
+        commit: false
+        diff: false
+        logfile: "{{ logfile }}"
+      when:
+        - config_result.changed
+        - "snapcheck_result.passPercentage == 100"
+
+
+    - name: Verify BGP configuration
+      ansible.builtin.assert:
+        that:
+          - "snapcheck_result.passPercentage == 100"
+        msg: "JSNAPy test on {{ inventory_hostname }} failed"

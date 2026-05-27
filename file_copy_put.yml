@@ -1,0 +1,32 @@
+# =============================================================================
+# Source : Ansible for Junos OS Developer Guide
+# Section: Use Ansible to Transfer Files to or from Junos Devices
+#          > Transfer Files to the Remote Device
+# Page   : 68
+# URL    : https://www.juniper.net/documentation/us/en/software/junos-ansible/
+#          ansible/topics/topic-map/junos-ansible-commands-rpcs-executing.html
+# -----------------------------------------------------------------------------
+# Description:
+#   Copies the bgp.slax op script from the Ansible control node to each
+#   host in the inventory group.
+#
+#   Source:      scripts/bgp.slax (relative to playbook directory)
+#   Destination: /var/db/scripts/op/bgp.slax (on the Junos device)
+#
+# Usage:
+#   ansible-playbook file_copy_put.yml -i <inventory>
+# =============================================================================
+---
+- name: Copy script to the Junos device
+  hosts: junos
+  connection: local
+  gather_facts: false
+
+
+  tasks:
+    - name: Copy a local script to the Junos device
+      juniper.device.file_copy:
+         action: put
+         file: bgp.slax
+         local_dir: scripts
+         remote_dir: /var/db/scripts/op
